@@ -53,3 +53,11 @@ TEST_MODE = os.getenv("TEST_MODE", "false").lower() == "true"
 
 if TEST_MODE:
     print("WARNING: Running in TEST_MODE. Token verification is disabled!") 
+
+# Auth: учётка и параметры JWT для POST /api/auth.
+# Значения по умолчанию — учебные (те же, что в скрипте фронтенда), на проде переопределяются окружением.
+AUTH_USERNAME = os.getenv("AUTH_USERNAME", "test_user")
+AUTH_PASSWORD = os.getenv("AUTH_PASSWORD", "test_pass")
+JWT_SECRET = os.getenv("JWT_SECRET", "oort-depot-dev-secret")
+JWT_ALGORITHM = "HS256"
+JWT_TTL_HOURS = int(os.getenv("JWT_TTL_HOURS", 24))  # NFR: токен действителен 24 часа

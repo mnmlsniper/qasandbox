@@ -8,9 +8,43 @@ from app import schemas, models
 from app.db import get_db
 from app.limiter import limiter
 from config import RATE_LIMIT_PER_MINUTE
-from app.security import get_current_user
+from app.security import get_current_user, check_credentials, create_token
 
 router = APIRouter()
+
+@router.post(
+    "/api/auth",
+    response_model=schemas.TokenResponse,
+    tags=["auth"],
+    summary="Получить JWT-токен",
+    responses={
+        401: {
+            "description": "Неверный логин или пароль",
+            "content": {
+                "application/json": {
+                    "example": {"detail": "Неверное имя пользователя или пароль"}
+                }
+            }
+        }
+    }
+)
+@limiter.limit(RATE_LIMIT_PER_MINUTE["default"])
+async def authenticate(
+    request: Request,
+    credentials: schemas.AuthRequest
+):
+    """
+    Выдает JWT-токен по имени пользователя и паролю.
+    Токен действителен 24 часа, передается в заголовке `Authorization: Bearer <token>`.
+    """
+    if not check_credentials(credentials.username, credentials.password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Неверное имя пользователя или пароль",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    token, expires_in = create_token(credentials.username)
+    return schemas.TokenResponse(token=token, expires_in=expires_in)
 
 @router.get(
     "/api/starships",

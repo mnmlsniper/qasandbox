@@ -73,6 +73,10 @@ def custom_openapi(app):
     # Добавляем теги для группировки эндпоинтов
     openapi_schema["tags"] = [
         {
+            "name": "auth",
+            "description": "Авторизация"
+        },
+        {
             "name": "starships",
             "description": "Операции со звездолетами"
         },

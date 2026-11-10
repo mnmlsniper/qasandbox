@@ -152,3 +152,14 @@ class ShipmentResponse(BaseModel):
 
 class ErrorResponse(BaseModel):
     detail: str
+
+
+class AuthRequest(BaseModel):
+    username: str = Field(..., min_length=1, description="Имя пользователя")
+    password: str = Field(..., min_length=1, description="Пароль")
+
+
+class TokenResponse(BaseModel):
+    token: str = Field(..., description="JWT-токен")
+    token_type: str = Field("bearer", description="Тип токена")
+    expires_in: int = Field(..., description="Срок жизни токена в секундах")
